@@ -1,0 +1,67 @@
+import pou.*
+
+describe "Tests de Pou"{
+
+test "Pou despues de comer la comida de la lista del jugador" {
+	pou.comer(jugador)
+	assert.equals(69.8,pou.energia())
+	assert.that(pou.comio())
+	assert.that(pou.seRie())
+}
+
+test "Pou despues de banarse"{
+	pou.comer(jugador)
+	pou.jugar()
+	pou.banarse()
+	assert.equals(69,pou.energia())
+	assert.notThat(pou.seRie())
+}
+
+test "Pou despues de jugar"{
+	pou.jugar()
+	assert.that(pou.seRie())
+	
+}
+
+test "Pou despues de energizarse"{
+	pou.energizarse()
+	assert.equals(70,pou.energia())
+}
+
+test "Pou si quiere dormir"{
+	pou.dormir(true)
+	assert.that(pou.durmio())
+}
+
+test "Pou si no quiere dormir"{
+	pou.dormir(false)
+	assert.equals(69,pou.energia())
+}
+
+test "Pou si tiene una alimentación normal"{
+	pou.comer(jugador)//Todos los alimentos de jugador deben ser saludables
+	assert.that(pou.seRie())
+	assert.equals("normal",pou.salud())
+}
+
+test "Pou si tiene una alimentación deplorable"{
+	pou.comer(jugador)//Los alimentos son más frituras que saludables
+	assert.equals("deplorable",pou.salud())
+	
+}
+
+test "Pou si tiene una alimentación alarmante"{
+	pou.comer(jugador)//Si su cantidad de alimentos es balanceada
+	assert.notThat(pou.seRie())
+	assert.equals("alarmante",pou.salud())
+}
+
+test "Pou si tiene una alimentación aburrida"{
+	pou.comer(jugador)//Todos los alimentos de jugador deben ser saludables
+	assert.notThat(pou.seRie())
+	assert.equals("normal",pou.salud())
+}
+
+
+
+}

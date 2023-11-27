@@ -3,65 +3,204 @@ import pou.*
 describe "Tests de Pou"{
 
 test "Pou despues de comer la comida de la lista del jugador" {
-	pou.comer(jugador)
-	assert.equals(69.8,pou.energia())
-	assert.that(pou.comio())
-	assert.that(pou.seRie())
-}
+        pou.comer(jugador)
+        assert.equals(69.8,pou.energia())
+        assert.that(pou.comio())
+        assert.that(pou.seRie())
+    }
 
-test "Pou despues de banarse"{
-	pou.comer(jugador)
-	pou.jugar()
-	pou.banarse()
-	assert.equals(69,pou.energia())
-	assert.notThat(pou.seRie())
-}
+    test "Pou despues de banarse"{
+        pou.comer(jugador)
+        pou.jugar()
+        pou.banarse()
+        assert.equals(69,pou.energia())
+        assert.notThat(pou.seRie())
+    }
 
-test "Pou despues de jugar"{
-	pou.jugar()
-	assert.that(pou.seRie())
-	
-}
+    test "Pou despues de jugar"{
+        pou.jugar()
+        assert.that(pou.seRie())
+    }
 
-test "Pou despues de energizarse"{
-	pou.energizarse()
-	assert.equals(70,pou.energia())
-}
+    test "Pou despues de energizarse"{
+        pou.energizarse()
+        assert.equals(70,pou.energia())
+    }
 
-test "Pou si quiere dormir"{
-	pou.dormir(true)
-	assert.that(pou.durmio())
-}
+    test "Pou si quiere dormir"{
+        pou.dormir(true)
+        assert.that(pou.durmio())
+    }
 
-test "Pou si no quiere dormir"{
-	pou.dormir(false)
-	assert.equals(69,pou.energia())
-}
+    test "Pou si no quiere dormir"{
+        pou.dormir(false)
+        assert.equals(69,pou.energia())
+    }
 
-test "Pou si tiene una alimentación normal"{
-	pou.comer(jugador)//Todos los alimentos de jugador deben ser saludables
-	assert.that(pou.seRie())
-	assert.equals("normal",pou.salud())
-}
+    test "Pou si tiene una alimentación normal"{
+        jugador.alimentos = [fruta, fruta, fruta, fruta, fruta] // Alimentos saludables
+        pou.comer(jugador)
+        assert.that(pou.seRie())
+        assert.equals("normal",pou.salud())
+    }
 
-test "Pou si tiene una alimentación deplorable"{
-	pou.comer(jugador)//Los alimentos son más frituras que saludables
-	assert.equals("deplorable",pou.salud())
-	
-}
+    test "Pou si tiene una alimentación deplorable"{
+        jugador.alimentos = [bebida, bebida, bebida] // Alimentos más frituras que saludables
+        pou.comer(jugador)
+        assert.equals("deplorable",pou.salud())
+    }
 
-test "Pou si tiene una alimentación alarmante"{
-	pou.comer(jugador)//Si su cantidad de alimentos es balanceada
-	assert.notThat(pou.seRie())
-	assert.equals("alarmante",pou.salud())
-}
+    test "Pou si tiene una alimentación alarmante"{
+        jugador.alimentos = [fruta, fruta, bebida] // Alimentos balanceados
+        pou.comer(jugador)
+        assert.notThat(pou.seRie())
+        assert.equals("alarmante",pou.salud())
+    }
 
-test "Pou si tiene una alimentación aburrida"{
-	pou.comer(jugador)//Todos los alimentos de jugador deben ser saludables
-	assert.notThat(pou.seRie())
-	assert.equals("normal",pou.salud())
-}
+    test "Pou si tiene una alimentación aburrida"{
+        jugador.alimentos = [fruta, fruta, fruta, fruta, fruta] // Alimentos saludables
+        pou.comer(jugador)
+        assert.notThat(pou.seRie())
+        assert.equals("normal",pou.salud())
+    }
 
+    test "Pou jugar con otro Pou aburrido" {
+        val otroPou = new pou()
+        assert.exception(jugarConPouFelizException) {
+            pou.verificarSiPuedeJugar(otroPou)
+        }
+    }
 
+    test "Pou jugar con otro Pou feliz de mayor energía" {
+        val otroPou = new pou()
+        otroPou.energia = 80
+        assert.exception(jugarConPouFelizException) {
+            pou.verificarSiPuedeJugar(otroPou)
+        }
+    }
+
+    test "Pou después de envejecer y jugar" {
+        pou.aumentarEdad() // Envejecer
+        pou.jugar()
+        assert.equals(66, pou.energia()) // Energía disminuye en 3 (jugar y envejecer)
+        assert.that(pou.seRie())
+    }
+
+    test "Pou después de jugar con otro Pou feliz de igual energía" {
+        val otroPou = new pou()
+        assert.notException(jugarConPouFelizException) {
+            pou.verificarSiPuedeJugar(otroPou)
+        }
+    }
+
+    test "Pou después de comer alimentos fritos" {
+        jugador.alimentos = [alimentoCocido(), alimentoCocido(), alimentoCocido()] // Alimentos fritos
+        pou.comer(jugador)
+        assert.equals("deplorable", pou.salud())
+    }
+
+    test "Pou después de jugar y banarse sin comer" {
+        pou.jugar()
+        pou.banarse()
+        assert.equals(67, pou.energia()) // Energía disminuye en 3 (jugar y bañarse sin comer)
+        assert.notThat(pou.seRie())
+    }
+
+    test "Pou después de dormir y energizarse" {
+        pou.dormir(true)
+        pou.energizarse()
+        assert.equals(70, pou.energia())
+        assert.that(pou.durmio())
+        assert.that(pou.seRie())
+    }
+
+    test "Pou después de jugar con otro Pou aburrido y luego comer" {
+        val otroPou = new pou()
+        assert.exception(jugarConPouFelizException) {
+            pou.verificarSiPuedeJugar(otroPou)
+        }
+        jugador.alimentos = [fruta, fruta, fruta] // Alimentos saludables
+        pou.comer(jugador)
+        assert.notThat(pou.seRie())
+        assert.equals("normal", pou.salud())
+    }
+
+    test "Pou después de comer y verificar energía baja" {
+        jugador.alimentos = [fruta, fruta, fruta] // Alimentos saludables
+        pou.comer(jugador)
+        pou.energia = 50
+        assert.exception(energiaBajaPou) {
+            pou.verificarEnergia()
+        }
+    }
+
+    test "Pou después de jugar y banarse con energía inicial" {
+        pou.energia = pou.energiaInicial
+        pou.jugar()
+        pou.banarse()
+        assert.equals(68, pou.energia()) // Energía disminuye en 2 (jugar y bañarse)
+        assert.notThat(pou.seRie())
+    }
+
+    test "Pou después de envejecer y jugar varias veces" {
+        repeat(10) {
+            pou.aumentarEdad() // Envejecer
+            pou.jugar()
+        }
+        assert.equals(50, pou.energia()) // Energía disminuye en 20 (jugar y envejecer 10 veces)
+        assert.that(pou.seRie())
+    }
+
+    test "Pou después de comer alimentos y jugar con otro Pou feliz" {
+        jugador.alimentos = [fruta, alimentoCocido(), fruta] // Alimentos variados
+        pou.comer(jugador)
+        
+        val otroPou = new pou()
+        otroPou.energia = 70
+        assert.notException(jugarConPouFelizException) {
+            pou.verificarSiPuedeJugar(otroPou)
+        }
+
+        assert.equals(70, pou.energia()) // Energía se mantiene igual (comer y jugar con otro Pou feliz)
+        assert.that(pou.seRie())
+    }
+
+    test "Pou después de jugar, banarse y energizarse" {
+        pou.jugar()
+        pou.banarse()
+        pou.energizarse()
+        assert.equals(70, pou.energia()) // Energía se mantiene igual (jugar, banarse y energizarse)
+        assert.that(pou.seRie())
+    }
+
+    test "Pou después de jugar y dormir sin querer dormir" {
+        pou.jugar()
+        pou.dormir(false)
+        assert.equals(68, pou.energia()) // Energía disminuye en 2 (jugar y no querer dormir)
+        assert.notThat(pou.durmio())
+    }
+
+    test "Pou después de comer alimentos fritos y verificar salud" {
+        jugador.alimentos = [alimentoCocido(), alimentoCocido(), alimentoCocido()] // Alimentos fritos
+        pou.comer(jugador)
+        assert.equals("deplorable", pou.salud())
+    }
+
+    test "Pou después de jugar y banarse sin haber comido" {
+        pou.jugar()
+        pou.banarse()
+        assert.equals(68, pou.energia()) // Energía disminuye en 2 (jugar y bañarse sin comer)
+        assert.notThat(pou.seRie())
+    }
+
+    test "Pou después de envejecer y comer" {
+        repeat(5) {
+            pou.aumentarEdad() // Envejecer
+        }
+        jugador.alimentos = [fruta, fruta, fruta] // Alimentos saludables
+        pou.comer(jugador)
+        assert.equals(70, pou.energia()) // Energía se mantiene igual (envejecer y comer)
+        assert.that(pou.seRie())
+    }
 
 }
